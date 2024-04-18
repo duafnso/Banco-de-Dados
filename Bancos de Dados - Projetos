@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 Bancos de Dados - Projetos Práticos
 
 Lembrando que alguns códigos são construídos em Flask, então você terá que criar Html, Css compatíveis.
@@ -71,17 +69,134 @@ print("\nLista de Alunos Atualizada:")
 for aluno in alunos:
     print(f"ID: {aluno[0]}, Nome: {aluno[1]}, Idade: {aluno[2]}, Notas: {aluno[3]}")
 
-2. Lista De Tarefas
+4. Gerenciador de Senhas
+
+import sqlite3
+import hashlib
+
+# Função para criar a tabela de senhas no banco de dados
+def criar_tabela_senhas():
+    conn = sqlite3.connect("gerenciador_de_senhas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS senhas (
+        id INTEGER PRIMARY KEY,
+        website TEXT,
+        usuario TEXT,
+        senha TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar uma nova senha ao banco de dados
+def adicionar_senha(website, usuario, senha):
+    conn = sqlite3.connect("gerenciador_de_senhas.db")
+    cursor = conn.cursor()
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    cursor.execute("INSERT INTO senhas (website, usuario, senha) VALUES (?, ?, ?)", (website, usuario, senha_hash))
+    conn.commit()
+    conn.close()
+
+# Função para listar todas as senhas do banco de dados
+def listar_senhas():
+    conn = sqlite3.connect("gerenciador_de_senhas.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM senhas")
+    senhas = cursor.fetchall()
+    conn.close()
+    return senhas
+
+# Criar a tabela de senhas (se ainda não existir)
+criar_tabela_senhas()
+
+# Exemplo de uso:
+# Adicionar novas senhas
+adicionar_senha("example.com", "user123", "senha123")
+adicionar_senha("outrosite.com", "alice", "senhasegura")
+
+# Listar todas as senhas
+senhas = listar_senhas()
+print("Gerenciador de Senhas:")
+for senha in senhas:
+    print(f"Website: {senha[1]}, Usuário: {senha[2]}, Senha: {senha[3]}")
+
+5. Sistema de Reservas e Agendamento 
 
 import sqlite3
 
+# Função para criar a tabela de reservas no banco de dados
+def criar_tabela_reservas():
+    conn = sqlite3.connect("sistema_de_reservas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS reservas (
+        id INTEGER PRIMARY KEY,
+        recurso TEXT,
+        data_hora DATETIME,
+        usuario TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para fazer uma reserva
+def fazer_reserva(recurso, data_hora, usuario):
+    conn = sqlite3.connect("sistema_de_reservas.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO reservas (recurso, data_hora, usuario) VALUES (?, ?, ?)", (recurso, data_hora, usuario))
+    conn.commit()
+    conn.close()
+
+# Função para listar todas as reservas
+def listar_reservas():
+    conn = sqlite3.connect("sistema_de_reservas.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM reservas")
+    reservas = cursor.fetchall()
+    conn.close()
+    return reservas
+
+# Criar a tabela de reservas (se ainda não existir)
+criar_tabela_reservas()
+
+# Exemplo de uso:
+# Fazer reservas
+fazer_reserva("Sala de Reuniões 1", "2023-12-15 14:00", "Alice")
+fazer_reserva("Laboratório de Computadores", "2023-12-16 10:30", "Bob")
+
+# Listar todas as reservas
+reservas = listar_reservas()
+print("Sistema de Reservas:")
+for reserva in reservas:
+    print(f"Recurso: {reserva[1]}, Data e Hora: {reserva[2]}, Usuário: {reserva[3]}")
+
+6. Gerenciamento de Projetos 
+
+import sqlite3
+
+# Função para criar a tabela de projetos no banco de dados
+def criar_tabela_projetos():
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS projetos (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        status TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
 # Função para criar a tabela de tarefas no banco de dados
 def criar_tabela_tarefas():
-    conn = sqlite3.connect("lista_de_tarefas.db")
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS tarefas (
         id INTEGER PRIMARY KEY,
+        projeto_id INTEGER,
         descricao TEXT,
         concluida BOOLEAN
     )
@@ -89,128 +204,993 @@ def criar_tabela_tarefas():
     conn.commit()
     conn.close()
 
-# Função para adicionar uma nova tarefa ao banco de dados
-def adicionar_tarefa(descricao):
-    conn = sqlite3.connect("lista_de_tarefas.db")
+# Função para adicionar um novo projeto
+def adicionar_projeto(nome, status):
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO tarefas (descricao, concluida) VALUES (?, ?)", (descricao, False))
+    cursor.execute("INSERT INTO projetos (nome, status) VALUES (?, ?)", (nome, status))
     conn.commit()
     conn.close()
 
-# Função para listar todas as tarefas no banco de dados
-def listar_tarefas():
-    conn = sqlite3.connect("lista_de_tarefas.db")
+# Função para adicionar uma nova tarefa a um projeto
+def adicionar_tarefa(projeto_id, descricao):
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM tarefas")
+    cursor.execute("INSERT INTO tarefas (projeto_id, descricao, concluida) VALUES (?, ?, ?)", (projeto_id, descricao, False))
+    conn.commit()
+    conn.close()
+
+# Função para listar todos os projetos
+def listar_projetos():
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM projetos")
+    projetos = cursor.fetchall()
+    conn.close()
+    return projetos
+
+# Função para listar todas as tarefas de um projeto
+def listar_tarefas(projeto_id):
+    conn = sqlite3.connect("gerenciamento_de_projetos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tarefas WHERE projeto_id = ?", (projeto_id,))
     tarefas = cursor.fetchall()
     conn.close()
     return tarefas
 
-# Função para marcar uma tarefa como concluída
-def marcar_como_concluida(id):
-    conn = sqlite3.connect("lista_de_tarefas.db")
-    cursor = conn.cursor()
-    cursor.execute("UPDATE tarefas SET concluida = ? WHERE id = ?", (True, id))
-    conn.commit()
-    conn.close()
-
-# Função para remover uma tarefa do banco de dados
-def remover_tarefa(id):
-    conn = sqlite3.connect("lista_de_tarefas.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM tarefas WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-
-# Criar a tabela de tarefas (se ainda não existir)
+# Criar as tabelas de projetos e tarefas (se ainda não existirem)
+criar_tabela_projetos()
 criar_tabela_tarefas()
 
 # Exemplo de uso:
-# Adicionar novas tarefas
-adicionar_tarefa("Fazer compras de supermercado")
-adicionar_tarefa("Estudar para o exame")
+# Adicionar projetos e tarefas
+adicionar_projeto("Projeto A", "Em andamento")
+projeto_id = 1  # ID do projeto criado
+adicionar_tarefa(projeto_id, "Desenvolver funcionalidade X")
+adicionar_tarefa(projeto_id, "Testar funcionalidade X")
 
-# Listar todas as tarefas
-tarefas = listar_tarefas()
-print("Lista de Tarefas:")
-for tarefa in tarefas:
-    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Concluída: {tarefa[2]}")
+# Listar projetos e suas tarefas
+projetos = listar_projetos()
+print("Gerenciamento de Projetos:")
+for projeto in projetos:
+    print(f"ID: {projeto[0]}, Nome: {projeto[1]}, Status: {projeto[2]}")
+    tarefas = listar_tarefas(projeto[0])
+    for tarefa in tarefas:
+        print(f"  Tarefa: {tarefa[2]}, Concluída: {tarefa[3]}")
 
-# Marcar uma tarefa como concluída (por ID)
-marcar_como_concluida(1)
-
-# Remover uma tarefa (por ID)
-remover_tarefa(2)
-
-# Listar as tarefas atualizadas
-tarefas = listar_tarefas()
-print("\nLista de Tarefas Atualizada:")
-for tarefa in tarefas:
-    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Concluída: {tarefa[2]}")
-
-3. Agenda de Contatos
+7. Automação de Atendimento ao Cliente
 
 import sqlite3
 
-# Função para criar a tabela de contatos no banco de dados
-def criar_tabela_contatos():
-    conn = sqlite3.connect("agenda_de_contatos.db")
+# Função para criar a tabela de clientes no banco de dados
+def criar_tabela_clientes():
+    conn = sqlite3.connect("atendimento_ao_cliente.db")
     cursor = conn.cursor()
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS contatos (
+    CREATE TABLE IF NOT EXISTS clientes (
         id INTEGER PRIMARY KEY,
         nome TEXT,
+        email TEXT,
         telefone TEXT,
-        email TEXT
+        historico TEXT
     )
     """)
     conn.commit()
     conn.close()
 
-# Função para adicionar um novo contato ao banco de dados
-def adicionar_contato(nome, telefone, email):
-    conn = sqlite3.connect("agenda_de_contatos.db")
+# Função para adicionar um novo cliente ao banco de dados
+def adicionar_cliente(nome, email, telefone):
+    conn = sqlite3.connect("atendimento_ao_cliente.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO contatos (nome, telefone, email) VALUES (?, ?, ?)", (nome, telefone, email))
+    cursor.execute("INSERT INTO clientes (nome, email, telefone, historico) VALUES (?, ?, ?, '')", (nome, email, telefone))
     conn.commit()
     conn.close()
 
-# Função para listar todos os contatos no banco de dados
-def listar_contatos():
-    conn = sqlite3.connect("agenda_de_contatos.db")
+# Função para registrar o histórico de interações com um cliente
+def registrar_interacao(cliente_id, historico):
+    conn = sqlite3.connect("atendimento_ao_cliente.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM contatos")
-    contatos = cursor.fetchall()
-    conn.close()
-    return contatos
-
-# Função para atualizar informações de um contato com base no ID
-def atualizar_contato(id, nome, telefone, email):
-    conn = sqlite3.connect("agenda_de_contatos.db")
-    cursor = conn.cursor()
-    cursor.execute("UPDATE contatos SET nome = ?, telefone = ?, email = ? WHERE id = ?", (nome, telefone, email, id))
+    cursor.execute("UPDATE clientes SET historico = ? WHERE id = ?", (historico, cliente_id))
     conn.commit()
     conn.close()
 
-# Criar a tabela de contatos (se ainda não existir)
-criar_tabela_contatos()
+# Criar a tabela de clientes (se ainda não existir)
+criar_tabela_clientes()
 
 # Exemplo de uso:
-# Adicionar novos contatos
-adicionar_contato("João", "123456789", "joao@email.com")
-adicionar_contato("Maria", "987654321", "maria@email.com")
+# Adicionar clientes
+adicionar_cliente("Alice", "alice@example.com", "555-1234")
+adicionar_cliente("Bob", "bob@example.com", "555-5678")
 
-# Listar todos os contatos
-contatos = listar_contatos()
-print("Agenda de Contatos:")
-for contato in contatos:
-    print(f"ID: {contato[0]}, Nome: {contato[1]}, Telefone: {contato[2]}, Email: {contato[3]}")
+# Registrar interações com clientes
+registrar_interacao(1, "Cliente muito satisfeito com o produto.")
+registrar_interacao(2, "Cliente com dúvidas sobre faturamento.")
 
-# Atualizar as informações de um contato (por ID)
-atualizar_contato(1, "João Silva", "987654321", "joao_silva@email.com")
+# Listar clientes e histórico de interações
+conn = sqlite3.connect("atendimento_ao_cliente.db")
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM clientes")
+clientes = cursor.fetchall()
+conn.close()
 
-# Listar os contatos atualizados
-contatos = listar_contatos()
-print("\nAgenda de Contatos Atualizada:")
-for contato in contatos:
-    print(f"ID: {contato[0]}, Nome: {contato[1]}, Telefone: {contato[2]}, Email: {contato[3]}")
+print("Atendimento ao Cliente:")
+for cliente in clientes:
+    print(f"Nome: {cliente[1]}, Email: {cliente[2]}, Telefone: {cliente[3]}")
+    print(f"Histórico de Interações: {cliente[4]}\n")
+
+8. Gerenciament de Tarefas em Equipe
+
+import sqlite3
+
+# Função para criar a tabela de tarefas no banco de dados
+def criar_tabela_tarefas():
+    conn = sqlite3.connect("gerenciamento_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tarefas (
+        id INTEGER PRIMARY KEY,
+        titulo TEXT,
+        descricao TEXT,
+        responsavel TEXT,
+        prazo DATE,
+        concluida BOOLEAN
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar uma nova tarefa
+def adicionar_tarefa(titulo, descricao, responsavel, prazo):
+    conn = sqlite3.connect("gerenciamento_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO tarefas (titulo, descricao, responsavel, prazo, concluida) VALUES (?, ?, ?, ?, 0)",
+                   (titulo, descricao, responsavel, prazo))
+    conn.commit()
+    conn.close()
+
+# Função para listar tarefas por responsável
+def listar_tarefas_por_responsavel(responsavel):
+    conn = sqlite3.connect("gerenciamento_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tarefas WHERE responsavel = ? ORDER BY prazo", (responsavel,))
+    tarefas = cursor.fetchall()
+    conn.close()
+    return tarefas
+
+# Criar a tabela de tarefas (se ainda não existir)
+criar_tabela_tarefas()
+
+# Exemplo de uso:
+# Adicionar tarefas
+adicionar_tarefa("Projeto A", "Desenvolver funcionalidade X", "Alice", "2023-12-15")
+adicionar_tarefa("Projeto B", "Testar funcionalidade Y", "Bob", "2023-12-16")
+
+# Listar tarefas por responsável
+tarefas_alice = listar_tarefas_por_responsavel("Alice")
+tarefas_bob = listar_tarefas_por_responsavel("Bob")
+
+print("Gerenciamento de Tarefas:")
+print("Tarefas de Alice:")
+for tarefa in tarefas_alice:
+    print(f"Título: {tarefa[1]}, Descrição: {tarefa[2]}, Prazo: {tarefa[4]}")
+print("Tarefas de Bob:")
+for tarefa in tarefas_bob:
+    print(f"Título: {tarefa[1]}, Descrição: {tarefa[2]}, Prazo: {tarefa[4]}")
+
+9. Sistema De Vendas Online
+
+import sqlite3
+
+# Função para criar as tabelas de produtos e vendas no banco de dados
+def criar_tabela_produtos():
+    conn = sqlite3.connect("sistema_de_vendas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS produtos (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        preco REAL,
+        estoque INTEGER
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+def criar_tabela_vendas():
+    conn = sqlite3.connect("sistema_de_vendas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS vendas (
+        id INTEGER PRIMARY KEY,
+        produto_id INTEGER,
+        quantidade INTEGER,
+        data DATE
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar um novo produto
+def adicionar_produto(nome, preco, estoque):
+    conn = sqlite3.connect("sistema_de_vendas.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)", (nome, preco, estoque))
+    conn.commit()
+    conn.close()
+
+# Função para realizar uma venda
+def realizar_venda(produto_id, quantidade, data):
+    conn = sqlite3.connect("sistema_de_vendas.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO vendas (produto_id, quantidade, data) VALUES (?, ?, ?)", (produto_id, quantidade, data))
+    conn.commit()
+    conn.close()
+
+# Função para calcular o total de vendas
+def calcular_total_vendas():
+    conn = sqlite3.connect("sistema_de_vendas.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT SUM(p.preco * v.quantidade) FROM produtos p JOIN vendas v ON p.id = v.produto_id")
+    total_vendas = cursor.fetchone()[0]
+    conn.close()
+    return total_vendas
+
+# Criar as tabelas de produtos e vendas (se ainda não existirem)
+criar_tabela_produtos()
+criar_tabela_vendas()
+
+# Exemplo de uso:
+# Adicionar produtos
+adicionar_produto("Produto A", 10.0, 100)
+adicionar_produto("Produto B", 15.0, 50)
+
+# Realizar vendas
+realizar_venda(1, 5, "2023-12-15")
+realizar_venda(2, 3, "2023-12-16")
+
+# Calcular o total de vendas
+total_vendas = calcular_total_vendas()
+
+print("Sistema de Vendas Online:")
+print(f"Total de Vendas: R${total_vendas:.2f}")
+
+10. Livro De Receitas
+
+import sqlite3
+
+# Conectar ao banco de dados SQLite (será criado se não existir)
+conn = sqlite3.connect('livro_de_receitas.db')
+
+# Criar a tabela de receitas
+conn.execute('''
+    CREATE TABLE IF NOT EXISTS receitas (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        ingredientes TEXT,
+        instrucoes TEXT
+    )
+''')
+
+# Função para adicionar uma nova receita
+def adicionar_receita(nome, ingredientes, instrucoes):
+    conn.execute('INSERT INTO receitas (nome, ingredientes, instrucoes) VALUES (?, ?, ?)', (nome, ingredientes, instrucoes))
+    conn.commit()
+
+# Função para listar todas as receitas
+def listar_receitas():
+    cursor = conn.execute('SELECT id, nome FROM receitas')
+    for row in cursor:
+        print(f'ID: {row[0]}, Nome: {row[1]}')
+
+# Função para exibir os detalhes de uma receita específica
+def mostrar_receita(id):
+    cursor = conn.execute('SELECT nome, ingredientes, instrucoes FROM receitas WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    if row:
+        print(f'Nome: {row[0]}\nIngredientes: {row[1]}\nInstruções: {row[2]}')
+    else:
+        print('Receita não encontrada.')
+
+# Exemplo de uso:
+adicionar_receita('Bolo de Chocolate', 'Farinha, açúcar, cacau em pó', 'Misture tudo e asse.')
+listar_receitas()
+mostrar_receita(1)
+
+# Fechar a conexão com o banco de dados quando terminar
+conn.close()
+
+11.  Gerenciamento de funcionários.
+
+import sqlite3
+
+# Conectar ao banco de dados SQLite (será criado se não existir)
+conn = sqlite3.connect('gerenciamento_de_funcionarios.db')
+
+# Criar a tabela de funcionários
+conn.execute('''
+    CREATE TABLE IF NOT EXISTS funcionarios (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        cargo TEXT,
+        salario REAL,
+        historico TEXT
+    )
+''')
+
+# Função para adicionar um novo funcionário
+def adicionar_funcionario(nome, cargo, salario, historico):
+    conn.execute('INSERT INTO funcionarios (nome, cargo, salario, historico) VALUES (?, ?, ?, ?)', (nome, cargo, salario, historico))
+    conn.commit()
+
+# Função para listar todos os funcionários
+def listar_funcionarios():
+    cursor = conn.execute('SELECT id, nome FROM funcionarios')
+    for row in cursor:
+        print(f'ID: {row[0]}, Nome: {row[1]}')
+
+# Função para exibir os detalhes de um funcionário específico
+def mostrar_funcionario(id):
+    cursor = conn.execute('SELECT nome, cargo, salario, historico FROM funcionarios WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    if row:
+        print(f'Nome: {row[0]}\nCargo: {row[1]}\nSalário: {row[2]}\nHistórico: {row[3]}')
+    else:
+        print('Funcionário não encontrado.')
+
+# Exemplo de uso:
+adicionar_funcionario('Maria', 'Engenheira de Software', 75000.0, 'Experiência em desenvolvimento web.')
+adicionar_funcionario('João', 'Analista de Marketing', 55000.0, 'Especializado em estratégias de marketing digital.')
+listar_funcionarios()
+mostrar_funcionario(1)
+
+# Fechar a conexão com o banco de dados quando terminar
+conn.close()
+
+ 12.  Gestão de Patrimônio.
+import sqlite3
+
+# Conectar ao banco de dados SQLite (será criado se não existir)
+conn = sqlite3.connect('gestao_de_patrimonio.db')
+
+# Criar a tabela de ativos
+conn.execute('''
+    CREATE TABLE IF NOT EXISTS ativos (
+        id INTEGER PRIMARY KEY,
+        tipo TEXT,
+        descricao TEXT,
+        valor REAL
+    )
+''')
+
+# Função para adicionar um novo ativo
+def adicionar_ativo(tipo, descricao, valor):
+    conn.execute('INSERT INTO ativos (tipo, descricao, valor) VALUES (?, ?, ?)', (tipo, descricao, valor))
+    conn.commit()
+
+# Função para listar todos os ativos
+def listar_ativos():
+    cursor = conn.execute('SELECT id, tipo, descricao, valor FROM ativos')
+    for row in cursor:
+        print(f'ID: {row[0]}, Tipo: {row[1]}, Descrição: {row[2]}, Valor: R$ {row[3]:.2f}')
+
+# Exemplo de uso:
+adicionar_ativo('Imóvel', 'Casa própria', 250000.0)
+adicionar_ativo('Investimento', 'Ações da Empresa XYZ', 5000.0)
+listar_ativos()
+
+# Fechar a conexão com o banco de dados quando terminar
+conn.close()
+
+13.  Gestão de Estoque.
+import sqlite3
+
+class SistemaGestaoEstoques:
+    def __init__(self, nome_banco):
+        self.conn = sqlite3.connect(nome_banco)
+        self.criar_tabela_estoque()
+    
+    def criar_tabela_estoque(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS estoque (
+                id INTEGER PRIMARY KEY,
+                produto TEXT,
+                quantidade INTEGER
+            )
+        ''')
+        self.conn.commit()
+
+    def adicionar_produto(self, produto, quantidade):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO estoque (produto, quantidade) VALUES (?, ?)", (produto, quantidade))
+        self.conn.commit()
+
+    def remover_produto(self, produto, quantidade):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT quantidade FROM estoque WHERE produto=?", (produto,))
+        resultado = cursor.fetchone()
+        if resultado:
+            estoque_atual = resultado[0]
+            if estoque_atual >= quantidade:
+                cursor.execute("UPDATE estoque SET quantidade=? WHERE produto=?", (estoque_atual - quantidade, produto))
+                self.conn.commit()
+            else:
+                print(f"Quantidade insuficiente de {produto} em estoque.")
+        else:
+            print(f"{produto} não encontrado em estoque.")
+
+    def consultar_estoque(self, produto):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT quantidade FROM estoque WHERE produto=?", (produto,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return resultado[0]
+        else:
+            return 0
+
+    def listar_produtos(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT produto FROM estoque")
+        produtos = cursor.fetchall()
+        return [produto[0] for produto in produtos]
+
+# Exemplo de uso:
+sistema = SistemaGestaoEstoques("estoque.db")
+
+# Adiciona produtos ao estoque
+sistema.adicionar_produto("Camiseta", 50)
+sistema.adicionar_produto("Calça Jeans", 30)
+sistema.adicionar_produto("Tênis", 20)
+
+# Consulta o estoque de um produto
+estoque_camiseta = sistema.consultar_estoque("Camiseta")
+print(f"Quantidade de Camisetas em estoque: {estoque_camiseta}")
+
+# Remove produtos do estoque
+sistema.remover_produto("Calça Jeans", 10)
+
+# Lista os produtos em estoque
+produtos_em_estoque = sistema.listar_produtos()
+print("Produtos em estoque:", produtos_em_estoque)
+
+ 14.  Gestão de Fornecedores.
+import sqlite3
+
+class SistemaGestaoFornecedoresCompras:
+    def __init__(self, nome_banco):
+        self.conn = sqlite3.connect(nome_banco)
+        self.criar_tabelas()
+    
+    def criar_tabelas(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS fornecedores (
+                id INTEGER PRIMARY KEY,
+                nome TEXT,
+                contato TEXT
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS compras (
+                id INTEGER PRIMARY KEY,
+                fornecedor_id INTEGER,
+                data_compra TEXT,
+                valor REAL
+            )
+        ''')
+        self.conn.commit()
+
+    def adicionar_fornecedor(self, nome, contato):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO fornecedores (nome, contato) VALUES (?, ?)", (nome, contato))
+        self.conn.commit()
+
+    def listar_fornecedores(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, nome FROM fornecedores")
+        fornecedores = cursor.fetchall()
+        return fornecedores
+
+    def fazer_compra(self, fornecedor_id, data_compra, valor):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO compras (fornecedor_id, data_compra, valor) VALUES (?, ?, ?)", (fornecedor_id, data_compra, valor))
+        self.conn.commit()
+
+    def listar_compras(self, fornecedor_id):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT data_compra, valor FROM compras WHERE fornecedor_id=?", (fornecedor_id,))
+        compras = cursor.fetchall()
+        return compras
+
+# Exemplo de uso:
+sistema = SistemaGestaoFornecedoresCompras("fornecedores_compras.db")
+
+# Adiciona fornecedores
+sistema.adicionar_fornecedor("Fornecedor A", "Contato A")
+sistema.adicionar_fornecedor("Fornecedor B", "Contato B")
+
+# Lista fornecedores
+fornecedores = sistema.listar_fornecedores()
+print("Fornecedores:")
+for fornecedor in fornecedores:
+    print(f"ID: {fornecedor[0]}, Nome: {fornecedor[1]}")
+
+# Realiza compras
+sistema.fazer_compra(1, "2023-01-15", 1000.0)
+sistema.fazer_compra(2, "2023-02-20", 1500.0)
+
+# Lista compras para um fornecedor
+compras_fornecedor_1 = sistema.listar_compras(1)
+print("Compras para Fornecedor 1:")
+for compra in compras_fornecedor_1:
+    print(f"Data: {compra[0]}, Valor: {compra[1]}")
+
+ 15.  Gestão de Projetos
+import sqlite3
+
+class SistemaGestaoProjetosTarefas:
+    def __init__(self, nome_banco):
+        self.conn = sqlite3.connect(nome_banco)
+        self.criar_tabelas()
+
+    def criar_tabelas(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS projetos (
+                id INTEGER PRIMARY KEY,
+                nome TEXT,
+                descricao TEXT,
+                data_inicio TEXT,
+                data_prazo TEXT
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS tarefas (
+                id INTEGER PRIMARY KEY,
+                projeto_id INTEGER,
+                descricao TEXT,
+                data_prazo TEXT,
+                concluida INTEGER
+            )
+        ''')
+        self.conn.commit()
+
+    def criar_projeto(self, nome, descricao, data_inicio, data_prazo):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO projetos (nome, descricao, data_inicio, data_prazo) VALUES (?, ?, ?, ?)",
+                       (nome, descricao, data_inicio, data_prazo))
+        self.conn.commit()
+
+    def criar_tarefa(self, projeto_id, descricao, data_prazo):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO tarefas (projeto_id, descricao, data_prazo, concluida) VALUES (?, ?, ?, 0)",
+                       (projeto_id, descricao, data_prazo))
+        self.conn.commit()
+
+    def listar_projetos(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, nome FROM projetos")
+        projetos = cursor.fetchall()
+        return projetos
+
+    def listar_tarefas(self, projeto_id):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, descricao, data_prazo, concluida FROM tarefas WHERE projeto_id=?", (projeto_id,))
+        tarefas = cursor.fetchall()
+        return tarefas
+
+    def marcar_tarefa_concluida(self, tarefa_id):
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE tarefas SET concluida=1 WHERE id=?", (tarefa_id,))
+        self.conn.commit()
+
+# Exemplo de uso:
+sistema = SistemaGestaoProjetosTarefas("gestao_projetos_tarefas.db")
+
+# Cria um projeto
+sistema.criar_projeto("Projeto A", "Descrição do Projeto A", "2023-01-01", "2023-02-28")
+
+# Cria tarefas para o projeto
+projeto_id = 1
+sistema.criar_tarefa(projeto_id, "Tarefa 1", "2023-02-10")
+sistema.criar_tarefa(projeto_id, "Tarefa 2", "2023-02-15")
+
+# Lista projetos
+projetos = sistema.listar_projetos()
+print("Projetos:")
+for projeto in projetos:
+    print(f"ID: {projeto[0]}, Nome: {projeto[1]}")
+
+# Lista tarefas para o projeto
+tarefas_projeto = sistema.listar_tarefas(projeto_id)
+print(f"Tarefas para Projeto {projeto_id}:")
+for tarefa in tarefas_projeto:
+    concluida = "Concluída" if tarefa[3] == 1 else "Pendente"
+    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Prazo: {tarefa[2]}, Status: {concluida}")
+
+# Marca uma tarefa como concluída
+tarefa_id = 1
+sistema.marcar_tarefa_concluida(tarefa_id)
+
+# Lista tarefas novamente para verificar a conclusão
+tarefas_projeto = sistema.listar_tarefas(projeto_id)
+print(f"Tarefas para Projeto {projeto_id} (após marcação de conclusão):")
+for tarefa in tarefas_projeto:
+    concluida = "Concluída" if tarefa[3] == 1 else "Pendente"
+    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Prazo: {tarefa[2]}, Status: {concluida}")
+
+16.  Aplicação de Agendamento Médico.
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
+
+app = Flask(__name__)
+
+# Criando o banco de dados ou conectando a um já existente
+conn = sqlite3.connect('agenda_medica.db')
+cursor = conn.cursor()
+
+# Criando a tabela de pacientes se não existir
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS pacientes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT NOT NULL,
+        telefone TEXT NOT NULL
+    )
+''')
+
+# Criando a tabela de agendamentos se não existir
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS agendamentos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        paciente_id INTEGER,
+        data_hora TEXT NOT NULL,
+        descricao TEXT,
+        FOREIGN KEY (paciente_id) REFERENCES pacientes (id)
+    )
+''')
+conn.commit()
+conn.close()
+
+# Rota principal para mostrar a lista de pacientes
+@app.route('/')
+def index():
+    conn = sqlite3.connect('agenda_medica.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM pacientes')
+    pacientes = cursor.fetchall()
+    conn.close()
+    return render_template('index.html', pacientes=pacientes)
+
+# Rota para adicionar um novo paciente
+@app.route('/novo_paciente', methods=['GET', 'POST'])
+def novo_paciente():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        telefone = request.form['telefone']
+        
+        conn = sqlite3.connect('agenda_medica.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO pacientes (nome, email, telefone) VALUES (?, ?, ?)', (nome, email, telefone))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('novo_paciente.html')
+
+# Rota para visualizar os agendamentos de um paciente
+@app.route('/agendamentos/<int:paciente_id>')
+def agendamentos(paciente_id):
+    conn = sqlite3.connect('agenda_medica.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM agendamentos WHERE paciente_id = ?', (paciente_id,))
+    agendamentos = cursor.fetchall()
+    cursor.execute('SELECT nome FROM pacientes WHERE id = ?', (paciente_id,))
+    nome_paciente = cursor.fetchone()[0]
+    conn.close()
+    return render_template('agendamentos.html', agendamentos=agendamentos, nome_paciente=nome_paciente)
+
+# Rota para agendar uma consulta para um paciente
+@app.route('/agendar/<int:paciente_id>', methods=['GET', 'POST'])
+def agendar(paciente_id):
+    if request.method == 'POST':
+        data_hora = request.form['data_hora']
+        descricao = request.form['descricao']
+        
+        conn = sqlite3.connect('agenda_medica.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO agendamentos (paciente_id, data_hora, descricao) VALUES (?, ?, ?)', (paciente_id, data_hora, descricao))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('agendamentos', paciente_id=paciente_id))
+    return render_template('agendar.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+17.  Sistema de Gestão Hospitalar.
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
+
+app = Flask(__name__)
+
+# Criando ou conectando ao banco de dados
+conn = sqlite3.connect('gestao_hospitalar.db')
+cursor = conn.cursor()
+
+# Criando tabelas se não existirem
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS pacientes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        idade INTEGER,
+        sexo TEXT,
+        cpf TEXT UNIQUE,
+        endereco TEXT,
+        telefone TEXT
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS consultas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        paciente_id INTEGER,
+        data_hora TEXT,
+        descricao TEXT,
+        FOREIGN KEY (paciente_id) REFERENCES pacientes (id)
+    )
+''')
+
+conn.commit()
+conn.close()
+
+# Rota principal para listar pacientes
+@app.route('/')
+def index():
+    conn = sqlite3.connect('gestao_hospitalar.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM pacientes')
+    pacientes = cursor.fetchall()
+    conn.close()
+    return render_template('index.html', pacientes=pacientes)
+
+# Rota para adicionar novo paciente
+@app.route('/novo_paciente', methods=['GET', 'POST'])
+def novo_paciente():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        idade = request.form['idade']
+        sexo = request.form['sexo']
+        cpf = request.form['cpf']
+        endereco = request.form['endereco']
+        telefone = request.form['telefone']
+
+        conn = sqlite3.connect('gestao_hospitalar.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO pacientes (nome, idade, sexo, cpf, endereco, telefone)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (nome, idade, sexo, cpf, endereco, telefone))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('novo_paciente.html')
+
+# Rota para listar consultas de um paciente específico
+@app.route('/consultas/<int:paciente_id>')
+def consultas(paciente_id):
+    conn = sqlite3.connect('gestao_hospitalar.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM consultas WHERE paciente_id = ?', (paciente_id,))
+    consultas = cursor.fetchall()
+    cursor.execute('SELECT nome FROM pacientes WHERE id = ?', (paciente_id,))
+    nome_paciente = cursor.fetchone()[0]
+    conn.close()
+    return render_template('consultas.html', consultas=consultas, nome_paciente=nome_paciente)
+
+# Rota para agendar uma consulta para um paciente
+@app.route('/agendar/<int:paciente_id>', methods=['GET', 'POST'])
+def agendar(paciente_id):
+    if request.method == 'POST':
+        data_hora = request.form['data_hora']
+        descricao = request.form['descricao']
+
+        conn = sqlite3.connect('gestao_hospitalar.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO consultas (paciente_id, data_hora, descricao)
+            VALUES (?, ?, ?)
+        ''', (paciente_id, data_hora, descricao))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('consultas', paciente_id=paciente_id))
+    return render_template('agendar.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+18. Monitoramento e Análise de Dados de Dispositivos Médico.
+import random
+import time
+import sqlite3
+
+# Criar ou conectar ao banco de dados
+conn = sqlite3.connect('dados_dispositivos.db')
+cursor = conn.cursor()
+
+# Criar tabela se não existir
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS dados_dispositivos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp INTEGER,
+        batimentos INTEGER,
+        pressao_sistolica INTEGER,
+        pressao_diastolica INTEGER
+    )
+''')
+conn.commit()
+conn.close()
+
+# Simulação de coleta de dados de dispositivos médicos
+def coletar_dados_simulados():
+    conn = sqlite3.connect('dados_dispositivos.db')
+    cursor = conn.cursor()
+
+    while True:
+        # Simular valores de batimentos cardíacos, pressão sistólica e diastólica
+        batimentos = random.randint(60, 100)
+        pressao_sistolica = random.randint(100, 140)
+        pressao_diastolica = random.randint(60, 90)
+        timestamp = int(time.time())
+
+        # Inserir dados no banco de dados
+        cursor.execute('''
+            INSERT INTO dados_dispositivos (timestamp, batimentos, pressao_sistolica, pressao_diastolica)
+            VALUES (?, ?, ?, ?)
+        ''', (timestamp, batimentos, pressao_sistolica, pressao_diastolica))
+        conn.commit()
+
+        time.sleep(2)  # Espera 2 segundos antes de coletar o próximo conjunto de dados
+
+# Iniciar a coleta de dados simulados
+coletar_dados_simulados()
+
+19. Sistema de Registro e Controle de Vacinação
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
+
+app = Flask(__name__)
+
+# Criar ou conectar ao banco de dados
+conn = sqlite3.connect('registro_vacinacao.db')
+cursor = conn.cursor()
+
+# Criar tabela de vacinação se não existir
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS vacinacao (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_paciente TEXT NOT NULL,
+        idade INTEGER,
+        cpf TEXT UNIQUE,
+        vacina TEXT,
+        data_vacinacao TEXT
+    )
+''')
+
+conn.commit()
+conn.close()
+
+# Rota principal para listar vacinações
+@app.route('/')
+def index():
+    conn = sqlite3.connect('registro_vacinacao.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM vacinacao')
+    vacinacoes = cursor.fetchall()
+    conn.close()
+    return render_template('index.html', vacinacoes=vacinacoes)
+
+# Rota para adicionar nova vacinação
+@app.route('/nova_vacinacao', methods=['GET', 'POST'])
+def nova_vacinacao():
+    if request.method == 'POST':
+        nome_paciente = request.form['nome_paciente']
+        idade = request.form['idade']
+        cpf = request.form['cpf']
+        vacina = request.form['vacina']
+        data_vacinacao = request.form['data_vacinacao']
+
+        conn = sqlite3.connect('registro_vacinacao.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO vacinacao (nome_paciente, idade, cpf, vacina, data_vacinacao)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (nome_paciente, idade, cpf, vacina, data_vacinacao))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('nova_vacinacao.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+ 20.  Sistema de gerenciamento universitário
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
+
+app = Flask(__name__)
+
+# Criar ou conectar ao banco de dados
+conn = sqlite3.connect('gerenciamento_alunos.db')
+cursor = conn.cursor()
+
+# Criar tabelas se não existirem
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS alunos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        matricula TEXT UNIQUE NOT NULL,
+        curso TEXT NOT NULL
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS notas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        aluno_id INTEGER,
+        disciplina TEXT NOT NULL,
+        nota INTEGER NOT NULL,
+        FOREIGN KEY (aluno_id) REFERENCES alunos (id)
+    )
+''')
+
+conn.commit()
+conn.close()
+
+# Rota principal para listar alunos
+@app.route('/')
+def index():
+    conn = sqlite3.connect('gerenciamento_alunos.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM alunos')
+    alunos = cursor.fetchall()
+    conn.close()
+    return render_template('index.html', alunos=alunos)
+
+# Rota para adicionar novo aluno
+@app.route('/novo_aluno', methods=['GET', 'POST'])
+def novo_aluno():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        matricula = request.form['matricula']
+        curso = request.form['curso']
+
+        conn = sqlite3.connect('gerenciamento_alunos.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO alunos (nome, matricula, curso) VALUES (?, ?, ?)', (nome, matricula, curso))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('novo_aluno.html')
+
+# Rota para adicionar notas para um aluno
+@app.route('/adicionar_nota/<int:aluno_id>', methods=['GET', 'POST'])
+def adicionar_nota(aluno_id):
+    if request.method == 'POST':
+        disciplina = request.form['disciplina']
+        nota = request.form['nota']
+
+        conn = sqlite3.connect('gerenciamento_alunos.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO notas (aluno_id, disciplina, nota) VALUES (?, ?, ?)', (aluno_id, disciplina, nota))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    return render_template('adicionar_nota.html', aluno_id=aluno_id)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+END
