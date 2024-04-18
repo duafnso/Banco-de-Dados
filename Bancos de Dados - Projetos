@@ -503,7 +503,7 @@ mostrar_receita(1)
 # Fechar a conexão com o banco de dados quando terminar
 conn.close()
 
-11.  Gerenciamento de funcionários.
+11.  Gerenciamento de funcionários
 
 import sqlite3
 
@@ -550,7 +550,8 @@ mostrar_funcionario(1)
 # Fechar a conexão com o banco de dados quando terminar
 conn.close()
 
- 12.  Gestão de Patrimônio.
+ 12.  Gestão de Patrimônio
+
 import sqlite3
 
 # Conectar ao banco de dados SQLite (será criado se não existir)
@@ -585,7 +586,8 @@ listar_ativos()
 # Fechar a conexão com o banco de dados quando terminar
 conn.close()
 
-13.  Gestão de Estoque.
+13.  Gestão de Estoque
+
 import sqlite3
 
 class SistemaGestaoEstoques:
@@ -657,7 +659,8 @@ sistema.remover_produto("Calça Jeans", 10)
 produtos_em_estoque = sistema.listar_produtos()
 print("Produtos em estoque:", produtos_em_estoque)
 
- 14.  Gestão de Fornecedores.
+ 14.  Gestão de Fornecedores
+
 import sqlite3
 
 class SistemaGestaoFornecedoresCompras:
@@ -730,6 +733,7 @@ for compra in compras_fornecedor_1:
     print(f"Data: {compra[0]}, Valor: {compra[1]}")
 
  15.  Gestão de Projetos
+
 import sqlite3
 
 class SistemaGestaoProjetosTarefas:
@@ -823,7 +827,8 @@ for tarefa in tarefas_projeto:
     concluida = "Concluída" if tarefa[3] == 1 else "Pendente"
     print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Prazo: {tarefa[2]}, Status: {concluida}")
 
-16.  Aplicação de Agendamento Médico.
+16.  Aplicação de Agendamento Médico
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
@@ -912,7 +917,8 @@ def agendar(paciente_id):
 if __name__ == '__main__':
     app.run(debug=True)
 
-17.  Sistema de Gestão Hospitalar.
+17.  Sistema de Gestão Hospitalar
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
@@ -1013,7 +1019,8 @@ def agendar(paciente_id):
 if __name__ == '__main__':
     app.run(debug=True)
 
-18. Monitoramento e Análise de Dados de Dispositivos Médico.
+18. Monitoramento e Análise de Dados de Dispositivos Médico
+
 import random
 import time
 import sqlite3
@@ -1060,6 +1067,7 @@ def coletar_dados_simulados():
 coletar_dados_simulados()
 
 19. Sistema de Registro e Controle de Vacinação
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
@@ -1120,6 +1128,7 @@ if __name__ == '__main__':
 
 
  20.  Sistema de gerenciamento universitário
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
