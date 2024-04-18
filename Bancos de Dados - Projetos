@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 Bancos de Dados - Projetos Práticos
 
 Lembrando que alguns códigos são construídos em Flask, então você terá que criar Html, Css compatíveis.
