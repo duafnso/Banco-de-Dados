@@ -1,2 +1,3 @@
 # Biblioteca Python
- Biblioteca Python Estudo Pessoal 
+
+ Biblioteca Python Criada A base de estudo feitos por mim durante minha faculdade
