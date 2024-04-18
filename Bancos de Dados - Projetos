@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!/usr/bin/env sqlite3
 
 Bancos de Dados - Projetos Práticos
 
