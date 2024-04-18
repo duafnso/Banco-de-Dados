@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+
+Bancos de Dados - Projetos Práticos
+
+Lembrando que alguns códigos são construídos em Flask, então você terá que criar Html, Css compatíveis.
+
+1. Cadastro de Alunos 
+
+import sqlite3
+
+# Função para criar a tabela de alunos no banco de dados
+def criar_tabela_alunos():
+    conn = sqlite3.connect("cadastro_alunos.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS alunos (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        idade INTEGER,
+        notas REAL
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar um novo aluno ao banco de dados
+def adicionar_aluno(nome, idade, notas):
+    conn = sqlite3.connect("cadastro_alunos.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO alunos (nome, idade, notas) VALUES (?, ?, ?)", (nome, idade, notas))
+    conn.commit()
+    conn.close()
+
+# Função para listar todos os alunos no banco de dados
+def listar_alunos():
+    conn = sqlite3.connect("cadastro_alunos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM alunos")
+    alunos = cursor.fetchall()
+    conn.close()
+    return alunos
+
+# Função para atualizar informações de um aluno com base no ID
+def atualizar_aluno(id, nome, idade, notas):
+    conn = sqlite3.connect("cadastro_alunos.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE alunos SET nome = ?, idade = ?, notas = ? WHERE id = ?", (nome, idade, notas, id))
+    conn.commit()
+    conn.close()
+
+# Criar a tabela de alunos (se ainda não existir)
+criar_tabela_alunos()
+
+# Exemplo de uso:
+# Adicionar um novo aluno
+adicionar_aluno("João", 20, 9.5)
+adicionar_aluno("Maria", 22, 8.7)
+
+# Listar todos os alunos
+alunos = listar_alunos()
+print("Lista de Alunos:")
+for aluno in alunos:
+    print(f"ID: {aluno[0]}, Nome: {aluno[1]}, Idade: {aluno[2]}, Notas: {aluno[3]}")
+
+# Atualizar as informações de um aluno (por ID)
+atualizar_aluno(1, "João Silva", 21, 9.8)
+
+# Listar os alunos atualizados
+alunos = listar_alunos()
+print("\nLista de Alunos Atualizada:")
+for aluno in alunos:
+    print(f"ID: {aluno[0]}, Nome: {aluno[1]}, Idade: {aluno[2]}, Notas: {aluno[3]}")
+
+2. Lista De Tarefas
+
+import sqlite3
+
+# Função para criar a tabela de tarefas no banco de dados
+def criar_tabela_tarefas():
+    conn = sqlite3.connect("lista_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tarefas (
+        id INTEGER PRIMARY KEY,
+        descricao TEXT,
+        concluida BOOLEAN
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar uma nova tarefa ao banco de dados
+def adicionar_tarefa(descricao):
+    conn = sqlite3.connect("lista_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO tarefas (descricao, concluida) VALUES (?, ?)", (descricao, False))
+    conn.commit()
+    conn.close()
+
+# Função para listar todas as tarefas no banco de dados
+def listar_tarefas():
+    conn = sqlite3.connect("lista_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tarefas")
+    tarefas = cursor.fetchall()
+    conn.close()
+    return tarefas
+
+# Função para marcar uma tarefa como concluída
+def marcar_como_concluida(id):
+    conn = sqlite3.connect("lista_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE tarefas SET concluida = ? WHERE id = ?", (True, id))
+    conn.commit()
+    conn.close()
+
+# Função para remover uma tarefa do banco de dados
+def remover_tarefa(id):
+    conn = sqlite3.connect("lista_de_tarefas.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM tarefas WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+# Criar a tabela de tarefas (se ainda não existir)
+criar_tabela_tarefas()
+
+# Exemplo de uso:
+# Adicionar novas tarefas
+adicionar_tarefa("Fazer compras de supermercado")
+adicionar_tarefa("Estudar para o exame")
+
+# Listar todas as tarefas
+tarefas = listar_tarefas()
+print("Lista de Tarefas:")
+for tarefa in tarefas:
+    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Concluída: {tarefa[2]}")
+
+# Marcar uma tarefa como concluída (por ID)
+marcar_como_concluida(1)
+
+# Remover uma tarefa (por ID)
+remover_tarefa(2)
+
+# Listar as tarefas atualizadas
+tarefas = listar_tarefas()
+print("\nLista de Tarefas Atualizada:")
+for tarefa in tarefas:
+    print(f"ID: {tarefa[0]}, Descrição: {tarefa[1]}, Concluída: {tarefa[2]}")
+
+3. Agenda de Contatos
+
+import sqlite3
+
+# Função para criar a tabela de contatos no banco de dados
+def criar_tabela_contatos():
+    conn = sqlite3.connect("agenda_de_contatos.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS contatos (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        telefone TEXT,
+        email TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# Função para adicionar um novo contato ao banco de dados
+def adicionar_contato(nome, telefone, email):
+    conn = sqlite3.connect("agenda_de_contatos.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO contatos (nome, telefone, email) VALUES (?, ?, ?)", (nome, telefone, email))
+    conn.commit()
+    conn.close()
+
+# Função para listar todos os contatos no banco de dados
+def listar_contatos():
+    conn = sqlite3.connect("agenda_de_contatos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM contatos")
+    contatos = cursor.fetchall()
+    conn.close()
+    return contatos
+
+# Função para atualizar informações de um contato com base no ID
+def atualizar_contato(id, nome, telefone, email):
+    conn = sqlite3.connect("agenda_de_contatos.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE contatos SET nome = ?, telefone = ?, email = ? WHERE id = ?", (nome, telefone, email, id))
+    conn.commit()
+    conn.close()
+
+# Criar a tabela de contatos (se ainda não existir)
+criar_tabela_contatos()
+
+# Exemplo de uso:
+# Adicionar novos contatos
+adicionar_contato("João", "123456789", "joao@email.com")
+adicionar_contato("Maria", "987654321", "maria@email.com")
+
+# Listar todos os contatos
+contatos = listar_contatos()
+print("Agenda de Contatos:")
+for contato in contatos:
+    print(f"ID: {contato[0]}, Nome: {contato[1]}, Telefone: {contato[2]}, Email: {contato[3]}")
+
+# Atualizar as informações de um contato (por ID)
+atualizar_contato(1, "João Silva", "987654321", "joao_silva@email.com")
+
+# Listar os contatos atualizados
+contatos = listar_contatos()
+print("\nAgenda de Contatos Atualizada:")
+for contato in contatos:
+    print(f"ID: {contato[0]}, Nome: {contato[1]}, Telefone: {contato[2]}, Email: {contato[3]}")
