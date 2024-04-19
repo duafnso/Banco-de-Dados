@@ -121,3 +121,423 @@ conexao.commit()
 print(cursor.rowcount, "registro(s) excluído(s).")
 
 conexao.close()
+
+Operações CRUD (Create, Read, Update, Delete)
+
+6. Criar uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Criar uma tabela
+sql = "CREATE TABLE clientes (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(255), email VARCHAR(255))"
+cursor.execute(sql)
+
+print("Tabela criada com sucesso.")
+
+conexao.close()
+
+7. Ler Dados de uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Ler dados de uma tabela
+sql = "SELECT * FROM clientes"
+cursor.execute(sql)
+
+resultados = cursor.fetchall()
+
+for resultado in resultados:
+    print(resultado)
+
+conexao.close()
+
+
+8. Atualizar Dados em uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Atualizar dados em uma tabela
+sql = "UPDATE clientes SET nome = %s WHERE id = %s"
+valores = ("Novo Nome", 1)  # Supondo que queremos atualizar o registro com id 1
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) atualizado(s).")
+
+conexao.close()
+
+
+9. Inserir Dados em uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Inserir dados em uma tabela
+sql = "INSERT INTO clientes (nome, email) VALUES (%s, %s)"
+valores = ("Novo Cliente", "novo_cliente@example.com")
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) inserido(s).")
+
+conexao.close()
+
+10. Excluir Dados de uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Excluir dados de uma tabela
+sql = "DELETE FROM clientes WHERE id = %s"
+valores = (1,)  # Supondo que queremos excluir o registro com id 1
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) excluído(s).")
+
+conexao.close()
+
+Segurança e Prevenção contra Injeção de SQL
+
+11. Criar um novo registro de forma segura
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Criar um novo registro de forma segura
+sql = "INSERT INTO tabela (coluna1, coluna2) VALUES (%s, %s)"
+valores = ("valor1", "valor2")
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) inserido(s) com segurança.")
+
+conexao.close()
+
+12. Ler dados de forma segura
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Ler dados de forma segura
+sql = "SELECT * FROM tabela WHERE coluna = %s"
+valores = ("valor_a_ser_lido",)
+
+cursor.execute(sql, valores)
+
+resultados = cursor.fetchall()
+
+for resultado in resultados:
+    print(resultado)
+
+conexao.close()
+
+13. Atualizar um registro de forma segura
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Atualizar um registro de forma segura
+sql = "UPDATE tabela SET coluna1 = %s WHERE coluna2 = %s"
+valores = ("novo_valor", "valor_atual")
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) atualizado(s) com segurança.")
+
+conexao.close()
+
+14. Excluir um registro de forma segura
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Excluir um registro de forma segura
+sql = "DELETE FROM tabela WHERE coluna = %s"
+valores = ("valor_a_ser_deletado",)
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) excluído(s) com segurança.")
+
+conexao.close()
+
+15. Utilizar Consultas Parametrizadas
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Consulta parametrizada
+sql = "SELECT * FROM tabela WHERE coluna = %s"
+valores = ("valor_parametrizado",)
+
+cursor.execute(sql, valores)
+
+resultados = cursor.fetchall()
+
+for resultado in resultados:
+    print(resultado)
+
+conexao.close()
+
+Transações e Controle de Concorrência
+
+16. Começar uma Transação
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Começar uma transação
+cursor.execute("START TRANSACTION")
+
+# Execute operações dentro da transação aqui
+
+conexao.commit()
+
+conexao.close()
+
+17. Rollback de uma Transação
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+try:
+    # Começar uma transação
+    cursor.execute("START TRANSACTION")
+
+    # Execute operações dentro da transação aqui
+
+    # Se algo der errado, faça rollback da transação
+    conexao.rollback()
+
+except Exception as e:
+    print("Erro:", e)
+    conexao.rollback()
+
+finally:
+    conexao.close()
+
+18. Define Auto Commit para False
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados",
+    autocommit=False
+)
+
+cursor = conexao.cursor()
+
+# Execute operações sem autocommit
+
+conexao.commit()
+
+conexao.close()
+
+19. Bloquear uma Tabela para Leitura
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Bloquear uma tabela para leitura
+cursor.execute("LOCK TABLES tabela READ")
+
+# Execute operações de leitura aqui
+
+cursor.execute("UNLOCK TABLES")
+
+conexao.close()
+
+20. Bloquear uma Tabela para Escrita
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Bloquear uma tabela para escrita
+cursor.execute("LOCK TABLES tabela WRITE")
+
+# Execute operações de escrita aqui
+
+cursor.execute("UNLOCK TABLES")
+
+conexao.close()
+
+ORM (Object-Relational Mapping)
+
+21. Definindo uma Classe de Modelo com SQLAlchemy
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Pessoa(Base):
+    __tablename__ = 'pessoas'
+    
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(50))
+    idade = Column(Integer)
+
+    def __repr__(self):
+        return f"<Pessoa(nome='{self.nome}', idade={self.idade})>"
+
+22. Criando uma Tabela no Banco de Dados com SQLAlchemy
+
+from sqlalchemy import create_engine
+
+engine = create_engine('mysql+mysqlconnector://seu_usuario:sua_senha@localhost/seu_banco_de_dados')
+
+Base.metadata.create_all(engine)
+
+23. Adicionando um Novo Registro com SQLAlchemy
+
+from sqlalchemy.orm import sessionmaker
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+nova_pessoa = Pessoa(nome='Alice', idade=30)
+session.add(nova_pessoa)
+session.commit()
+
+24. Consultando Dados com SQLAlchemy
+
+pessoas = session.query(Pessoa).all()
+
+for pessoa in pessoas:
+    print(pessoa)
+
+25. Atualizando um Registro com SQLAlchemy
+
+pessoa = session.query(Pessoa).filter_by(nome='Alice').first()
+pessoa.idade = 31
+session.commit()
