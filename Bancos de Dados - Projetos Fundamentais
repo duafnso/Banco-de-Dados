@@ -1,1 +1,123 @@
-Bancos de Dados - Projetos Fundamentais
+#!/usr/bin/env python3
+#!/usr/bin/env sqlite3
+#!/usr/bin/env hashlib
+
+Bancos de Dados - Projetos Fundamentais / Conexão Com o Banco de Dados
+
+1. Conectar ao Banco de Dados MySQL
+
+import mysql.connector
+
+# Estabelecer conexão com o banco de dados
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+# Verificar se a conexão foi bem sucedida
+if conexao.is_connected():
+    print("Conexão bem sucedida ao banco de dados MySQL.")
+else:
+    print("Falha ao conectar ao banco de dados MySQL.")
+
+2. Inserir Dados em uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Inserir dados em uma tabela
+sql = "INSERT INTO tabela (coluna1, coluna2) VALUES (%s, %s)"
+valores = ("valor1", "valor2")
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) inserido(s).")
+
+conexao.close()
+
+3. Consultar Dados de uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Consultar dados de uma tabela
+sql = "SELECT * FROM tabela"
+
+cursor.execute(sql)
+
+resultados = cursor.fetchall()
+
+for resultado in resultados:
+    print(resultado)
+
+conexao.close()
+
+4. Atualizar Dados em uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Atualizar dados em uma tabela
+sql = "UPDATE tabela SET coluna1 = %s WHERE coluna2 = %s"
+valores = ("novo_valor", "valor_atual")
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) atualizado(s).")
+
+conexao.close()
+
+5. Excluir Dados de uma Tabela
+
+import mysql.connector
+
+conexao = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="seu_banco_de_dados"
+)
+
+cursor = conexao.cursor()
+
+# Excluir dados de uma tabela
+sql = "DELETE FROM tabela WHERE coluna = %s"
+valores = ("valor_a_ser_deletado",)
+
+cursor.execute(sql, valores)
+
+conexao.commit()
+
+print(cursor.rowcount, "registro(s) excluído(s).")
+
+conexao.close()
