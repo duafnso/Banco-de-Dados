@@ -1,3 +1,3 @@
-# Biblioteca Python
+ Biblioteca de Banco de Dados Com integração em Python 
 
- Biblioteca Python Criada A base de estudo feitos por mim durante minha faculdade
+ Biblioteca de Banco de dados com integração de Python Criada A base de estudo feitos por mim durante minha faculdade
